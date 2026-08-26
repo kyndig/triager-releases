@@ -3,7 +3,19 @@
   <channel>
     <title>Triage</title>
     <link>https://kyndig.github.io/triager-releases/appcast.xml</link>
-    <description>Triage updates. Items are published only after notarization and Ed25519 signing.</description>
+    <description>Triage updates</description>
     <language>en</language>
+<item>
+  <title>Version 1.0.0</title>
+  <pubDate>Wed, 26 Aug 2026 10:33:28 +0000</pubDate>
+  <sparkle:version>1.0.0</sparkle:version>
+  <sparkle:shortVersionString>1.0.0</sparkle:shortVersionString>
+  <sparkle:minimumSystemVersion>14.0</sparkle:minimumSystemVersion>
+  <enclosure
+    url="https://kyndig.github.io/triager-releases/triager-1.0.0.dmg"
+    sparkle:edSignature="O4SaA+EdU/lZjdampRNzUgX22/y1DlAGirVnQnrl/plA2T0ewfvse0y5J7OHFBuVdoR/XOW0wLdk4/URfqXrBA=="
+    length="16652615"
+    type="application/octet-stream" />
+</item>
   </channel>
 </rss>
