@@ -1,0 +1,57 @@
+name: Attest published artifacts
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - "docs/*.dmg"
+      - "docs/*.sha256"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  id-token: write
+  attestations: write
+
+concurrency:
+  group: attest-published-artifacts
+  cancel-in-progress: false
+
+jobs:
+  attest:
+    name: Attest Sparkle artifacts
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5
+
+      - name: Require published artifacts
+        run: |
+          set -euo pipefail
+          shopt -s nullglob
+          dmgs=(docs/*.dmg)
+          checksums=(docs/*.sha256)
+          if [[ ${#dmgs[@]} -eq 0 || ${#checksums[@]} -eq 0 ]]; then
+            echo "error: docs/ must contain a DMG and SHA-256 checksum" >&2
+            exit 1
+          fi
+          for dmg in "${dmgs[@]}"; do
+            sum="${dmg}.sha256"
+            if [[ ! -f "$sum" ]]; then
+              echo "error: missing checksum for $dmg" >&2
+              exit 1
+            fi
+            expected="$(tr -d '[:space:]' <"$sum")"
+            actual="$(sha256sum "$dmg" | awk '{print $1}')"
+            if [[ "$expected" != "$actual" ]]; then
+              echo "error: $dmg does not match its published SHA-256" >&2
+              exit 1
+            fi
+          done
+
+      - uses: actions/attest-build-provenance@c074443f1aee8d4aeeae555aebba3282517141b2 # v2.2.3
+        with:
+          subject-path: |
+            docs/*.dmg
+            docs/*.sha256
